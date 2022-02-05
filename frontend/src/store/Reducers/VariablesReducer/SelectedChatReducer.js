@@ -40,14 +40,9 @@ const SelectChat = (id) => (dispatch, getState) => {
     dispatch(ChatSelectUserLoading(id));
 
     try{
-        fetch('http://127.0.0.1:5000/api/user', {
-            method: 'POST',
-            credentials: 'include',
-            body: JSON.stringify(
-                {
-                    user_id: id
-                }
-            )
+        fetch(`http://127.0.0.1:5000/api/user/${id}`, {
+            method: 'GET',
+            credentials: 'include'
         }).then(
             res => {
                 if (res.ok) {

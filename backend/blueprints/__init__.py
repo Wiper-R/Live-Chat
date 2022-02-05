@@ -8,19 +8,17 @@ def _cors(bp):
 
 def register_blueprints(app: Quart):
     # Auth Blueprints
-    from .auth import auth_blueprint 
-
-    app.register_blueprint(_cors(auth_blueprint.bp))
+    from . import auth
+    app.register_blueprint(_cors(auth.bp))
     print("Registered Auth Blurprint")
 
 
     # App Blueprints
-    from ._app import app_blueprint
-    app.register_blueprint(_cors(app_blueprint.bp))
+    from . import api
+    app.register_blueprint(_cors(api.bp))
     print("Registered App Blueprint")
 
     # Websocket Blueprints
-    from .websocket import websocket_blueprint
-
-    app.register_blueprint(websocket_blueprint.bp)
+    from . import websocket
+    app.register_blueprint(websocket.bp)
     print("Registered Websocket Blueprint")

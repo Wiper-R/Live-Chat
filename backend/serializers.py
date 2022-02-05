@@ -1,4 +1,4 @@
 from tortoise.contrib.pydantic import pydantic_model_creator
-from models.auth import User
+from models.api import User
 
 User_Pydantic = pydantic_model_creator(User)

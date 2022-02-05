@@ -39,7 +39,7 @@ const LoadUser = () => (dispatch, getState) => {
     }).then(
         res => {
             if (res.ok) {
-                fetch('http://127.0.0.1:5000/api/auth/user', {
+                fetch('http://127.0.0.1:5000/api/user/@me', {
                     method: 'GET',
                     credentials: 'include',
                 }).then(

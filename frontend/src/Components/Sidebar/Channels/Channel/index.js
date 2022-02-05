@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { SelectChat } from "../../../../store/Reducers/VariablesReducer/SelectedChatReducer";
 
 
-const RecentChatWrapper = ({ className, id, fullname, username}) => {
+const ChannelWrapper = ({ className, id, fullname, username}) => {
     const dispatch = useDispatch();
 
     return (
@@ -21,7 +21,7 @@ const RecentChatWrapper = ({ className, id, fullname, username}) => {
     )
 }
 
-const RecentChat = styled(RecentChatWrapper)`
+const Channel = styled(ChannelWrapper)`
     padding-left: 8px;
     border-radius: 2px;
     cursor: pointer;
@@ -60,4 +60,4 @@ const RecentChat = styled(RecentChatWrapper)`
 
 `
 
-export default RecentChat;
+export default Channel;

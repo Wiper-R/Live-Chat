@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import RecentChats from "./RecentChats";
+import Channels from "./Channels";
 import Menu from "./Menu";
 import Search from "./Search";
 
@@ -8,7 +8,7 @@ const SidebarWrapper = ({className}) => {
     return (
         <div className={`d-flex flex-shrink-0 flex-column text-white ${className}`}>
             <Search/>
-            <RecentChats/>
+            <Channels/>
             <Menu/>
         </div>
     )

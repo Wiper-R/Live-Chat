@@ -3,43 +3,43 @@ const RECENT_CHATS_LOADING = "RECENT_CHATS_LOADING";
 const RECENT_CHATS_LOADED = "RECENT_CHATS_LOADED";
 const RECENT_CHATS_LOADING_FAILED = "RECENT_CHATS_LOADING_FAILED";
 
-const RecentChatLoading = () => {
+const ChannelLoading = () => {
   return {
     type: RECENT_CHATS_LOADING,
   };
 };
 
-const RecentChatLoaded = (payload) => {
+const ChannelLoaded = (payload) => {
   return {
     type: RECENT_CHATS_LOADED,
     payload,
   };
 };
 
-const RecentChatLoadingFailed = () => {
+const ChannelLoadingFailed = () => {
   return {
     type: RECENT_CHATS_LOADING_FAILED,
   };
 };
 
-const LoadRecentChats = () => (dispatch, _) => {
-  dispatch(RecentChatLoading());
+const LoadChannels = () => (dispatch, _) => {
+  dispatch(ChannelLoading());
   try{
       fetch("http://127.0.0.1:5000/api/friends", { credentials: "include" }).then(
         (res) => {
           if (res.ok) {
             res.json().then((data) => {
-              dispatch(RecentChatLoaded(data));
+              dispatch(ChannelLoaded(data));
             });
           }
           else{
-              dispatch(RecentChatLoadingFailed());
+              dispatch(ChannelLoadingFailed());
           }
         }
       );
   }
   catch {
-      dispatch(RecentChatLoadingFailed());
+      dispatch(ChannelLoadingFailed());
   }
 };
 
@@ -51,7 +51,7 @@ const State = {
     isFetching: false,
 }
 
-const RecentChatReducers = (state = State, action) => {
+const ChannelReducers = (state = State, action) => {
     switch (action.type){
         case RECENT_CHATS_LOADING:
             return {
@@ -73,7 +73,7 @@ const RecentChatReducers = (state = State, action) => {
     }
 }
 
-export default RecentChatReducers;
+export default ChannelReducers;
 export {
-    LoadRecentChats
+    LoadChannels
 };

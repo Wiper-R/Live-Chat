@@ -11,9 +11,16 @@ TORTOISE = {
     },
     "apps": {
         "models": {
-            "models": ("models.auth", "models.app", "aerich.models"),
+            "models": ("aerich.models",)
+        },
+        "auth": {
+            "models": ("models.auth",),
             "default_connection": "default",
         },
+        "api": {
+            "models": ("models.api",),
+            "default_connection": "default",
+        }
     },
 }
 

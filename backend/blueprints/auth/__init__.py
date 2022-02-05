@@ -1,13 +1,15 @@
 import jwt, secrets
-from quart import Blueprint, request
+from quart import Blueprint, request, session
 from config import JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
 from constants import BASE_TIME, JWT_ALGORITHIM
 from utils.helpers import UnAuthorized, get_response, utc_now
-from models.auth import User, AuthToken
+from models.auth import AuthToken
+from models.api import User
 from serializers import User_Pydantic
 from datetime import datetime, timedelta
 from tortoise.query_utils import Q
 from tortoise.exceptions import DoesNotExist
+from quart import g
 
 bp = Blueprint("Auth-Blueprint", __name__, url_prefix="/api/auth")
 
@@ -236,23 +238,8 @@ async def protected():
         return get_response()
 
 
-@bp.route("/user", methods=("GET",))
-async def get_user():
-    token = request.cookies["token"]
-    payload = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
-    sub = payload["sub"]
-    user = await User.get(id=sub)
-    fields = (
-        "username",
-        "firstname",
-        "lastname",
-        "email",
-        "id",
-    )
+        
+            
 
-    data = {}
 
-    for field in fields:
-        data[field] = getattr(user, field)
 
-    return data

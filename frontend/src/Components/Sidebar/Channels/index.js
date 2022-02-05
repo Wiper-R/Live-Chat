@@ -1,30 +1,30 @@
 import { useEffect } from "react";
 import styled from "styled-components";
-import RecentChat from "./RecentChat";
+import Channel from "./Channel";
 import { useDispatch } from "react-redux";
-import { LoadRecentChats } from "../../../store/Reducers/VariablesReducer/RecentChatsReducer";
+import { LoadChannels } from "../../../store/Reducers/VariablesReducer/ChannelsReducer";
 import { useSelector } from "react-redux";
 
 
 const RecentsChatWrapper = ({className}) => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-    const recentChats = useSelector(state => state.variables.recentChats);
+    const Channels = useSelector(state => state.variables.Channels);
 
     useEffect(() => {
         if (isLoggedIn){
-            dispatch(LoadRecentChats());
+            dispatch(LoadChannels());
         }
     }, [isLoggedIn])
     
     return (
         <div className={`d-flex flex-column flex-grow-1 mb-auto ${className}`}>
-            {!recentChats.isFetching ? recentChats.data.map((e) => <RecentChat key={e.user.username} fullname={`${e.user.firstname} ${e.user.lastname}`} username={e.user.username} id={e.user.id}/>) : <></>}
+            {!Channels.isFetching ? Channels.data.map((e) => <Channel key={e.user.username} fullname={`${e.user.firstname} ${e.user.lastname}`} username={e.user.username} id={e.user.id}/>) : <></>}
         </div>
     )
 }
 
-const RecentChats = styled(RecentsChatWrapper)` 
+const Channels = styled(RecentsChatWrapper)` 
     & .recent-chat:not(:first-child) .description{
         border-top: 1px solid gray;
     }
@@ -50,4 +50,4 @@ const RecentChats = styled(RecentsChatWrapper)`
 `
 
 
-export default RecentChats;
+export default Channels;
