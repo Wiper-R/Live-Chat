@@ -1,98 +1,118 @@
-const CHAT_SELECT = "CHAT_SELECT";
-const CHAT_DESELECT = "CHAT_DESELECTS";
-const CHAT_SELECT_USER = "CHAT_SELECT_USER";
+// Actions
+const CHAT_SELECT_USER_LOADING = "CHAT_SELECT_USER_LOADING";
+const CHAT_SELECT_USER_LOADED = "CHAT_SELECT_USER_LOADED";
+const CHAT_SELECT_USER_LOADING_FAILED = "CHAT_SELECT_USER_LOADING_FAILED";
+const CHAT_DESELECT = "CHAT_DESELECT";
 
-const chatSelect = (value) => {
+const ChatSelectUserLoading = (payload) => {
     return {
-        type: CHAT_SELECT,
-        id: value,
+        type: CHAT_SELECT_USER_LOADING,
+        payload,
     }
 }
 
-const chatDeSelect = () => {
+const ChatDeselect = () => {
     return {
         type: CHAT_DESELECT
     }
 }
 
-const chatSelectUser = (user) => {
+const ChatSelectUserLoaded = (payload) => {
     return {
-        type: CHAT_SELECT_USER,
-        payload: user,
+        type: CHAT_SELECT_USER_LOADED,
+        payload
+    }
+}
+
+const ChatSelectUserLoadingFailed = () => {
+    return {
+        type: CHAT_SELECT_USER_LOADING_FAILED,
     }
 }
 
 
-const selectChat = (id) => (dispatch, getState) => {
+const SelectChat = (id) => (dispatch, getState) => {
     const state = getState().variables.selectedChat;
-
     if (state.id == id){
-        return
+        return;
     }
 
-    dispatch(chatSelect(id));
-    fetch('http://127.0.0.1:5000/api/user', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(
-            {
-                user_id: id
+    dispatch(ChatSelectUserLoading(id));
+
+    try{
+        fetch('http://127.0.0.1:5000/api/user', {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify(
+                {
+                    user_id: id
+                }
+            )
+        }).then(
+            res => {
+                if (res.ok) {
+                    res.json().then(user => dispatch(ChatSelectUserLoaded(user)))
+                }
+                else {
+                    dispatch(ChatSelectUserLoadingFailed());
+                }
             }
         )
-    }).then(
-        res => {
-            if (res.ok) {
-                res.json().then(user => dispatch(chatSelectUser(user)))
-            }
-            else {
-                dispatch(chatDeSelect());
-            }
-        }
-    )
+    }
+    catch{
+        dispatch(ChatSelectUserLoadingFailed());
+    }
 }
 
+//
+
+
+// Reducer Itself
 const State = {
     id: null, 
     user: null,
     isFetching: false,
 }
 
-const SelectedChat = (state = State, action) => {
+const SelectedChatReducer = (state = State, action) => {
     switch (action.type) {
-        case CHAT_SELECT:
-            state = {
+        case CHAT_SELECT_USER_LOADING:
+            console.log(action);
+            return {
                 ...state,
-                id: action.id,
+                id: action.payload,
                 user: null,
                 isFetching: true, 
             }
-            return state;
 
         case CHAT_DESELECT:
-            state = {
+            return {
                 ...state,
                 id: null,
                 user: null,
                 isFetching: false,
             }
-            return state;
 
-        case CHAT_SELECT_USER:
-            state = {
+        case CHAT_SELECT_USER_LOADED:
+            return {
                 ...state,
                 user: action.payload,
                 isFetching: false,
             }
 
-            return state;
+        case CHAT_SELECT_USER_LOADING_FAILED:
+            return {
+                ...state,
+                isFetching: false,
+            }
 
         default:
-            return state
+            return state;
     }
 }
 
 
-export default SelectedChat;
+export default SelectedChatReducer;
 export {
-    selectChat
+    SelectChat
 }

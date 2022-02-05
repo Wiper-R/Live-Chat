@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
-import SelectedChat from "./SelectedChatReducer";
+import SelectedChatReducer from "./SelectedChatReducer";
 import RecentChatsReducer from "./RecentChatsReducer";
 
 
 export default combineReducers(
     {
-        selectedChat: SelectedChat,
+        selectedChat: SelectedChatReducer,
         recentChats: RecentChatsReducer,
     }
 );

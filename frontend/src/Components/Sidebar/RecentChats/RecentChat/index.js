@@ -1,13 +1,13 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { selectChat } from "../../../../store/Reducers/VariablesReducer/SelectedChatReducer";
+import { SelectChat } from "../../../../store/Reducers/VariablesReducer/SelectedChatReducer";
 
 
 const RecentChatWrapper = ({ className, id, fullname, username}) => {
     const dispatch = useDispatch();
 
     return (
-        <div className={`d-flex flex-row recent-chat align-items-center ${className}`} onClick={() => dispatch(selectChat(id))}>
+        <div className={`d-flex flex-row recent-chat align-items-center ${className}`} onClick={() => dispatch(SelectChat(id))}>
             <img src={`http://127.0.0.1:5000/static/profiles/${id}.png`} alt="" className={`rounded-circle`} />
             <div className="d-flex container-fluid ps-2 flex-column justify-content-center description">
                 <span className="fs-6 fw text fullname">

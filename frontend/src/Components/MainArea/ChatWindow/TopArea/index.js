@@ -28,7 +28,6 @@ const TopAreaSkeleton = styled(TopAreaSkeletonWrapper)`
 
 const TopAreaWrapper = ({ className }) => {
   const selectedChat = useSelector((state) => state.variables.selectedChat);
-  console.log(selectedChat);
   return (
     <div
       className={`p-2 d-flex ${className} justify-content-between align-items-center`}
