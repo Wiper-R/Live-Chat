@@ -42,12 +42,11 @@ async def send_message(author_id: int, target_id: int, content: str):
 
     return False
 
+@bp.websocket("/ws")
+async def ws():
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_json()
+        res = await send_message(0, data["target_id"], data["content"])
+        print("Message Sending")
 
-
-# @bp.websocket("/ws")
-# async def ws():
-#     while True:
-#         data = await websocket.receive_json()
-#         print(data)
-#         res = await send_message(client_id, data["target_id"], data["content"])
-#         print("Message Sending")
