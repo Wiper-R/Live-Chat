@@ -3,6 +3,7 @@ from datetime import timezone
 from quart import Response
 from datetime import datetime
 from constants import DATETIME_FORMAT, EPOCH_MILLISECONDS
+from utils.snowflake import Snowflake
 
 def get_response(status: int = 200, **kwargs):
     return Response(
@@ -19,12 +20,11 @@ def str_to_dt(timestr: str) -> datetime:
 def utc_now() -> datetime:
     return datetime.now(tz=timezone.utc)
 
-
-def snowflake(incr):
-    return (round(time.time() * 1000) - EPOCH_MILLISECONDS) << 22 + incr
     
 
 UnAuthorized = get_response(
     message="You are not authorized.",
     status=401,
 )
+
+snowflake = Snowflake(EPOCH_MILLISECONDS)

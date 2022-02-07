@@ -1,15 +1,15 @@
 import jwt, secrets
-from quart import Blueprint, request, session
+from quart import Blueprint, request
 from config import JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
 from constants import BASE_TIME, JWT_ALGORITHIM
-from utils.helpers import UnAuthorized, get_response, utc_now
+from utils.helpers import UnAuthorized, get_response, snowflake, utc_now
 from models.auth import AuthToken
 from models.api import User
 from serializers import User_Pydantic
 from datetime import datetime, timedelta
 from tortoise.query_utils import Q
 from tortoise.exceptions import DoesNotExist
-from quart import g
+from utils.helpers import snowflake
 
 bp = Blueprint("Auth-Blueprint", __name__, url_prefix="/api/auth")
 
@@ -81,8 +81,8 @@ async def signup():
             message="A account with this email already exists!",
             status=422,
         )
-
     user = await User.create(
+        id=next(snowflake),
         username=username,
         firstname=firstname,
         lastname=lastname,
@@ -90,7 +90,17 @@ async def signup():
         password=password,
     )
     await AuthToken.create(id=user.id)
-    return get_response(message="Signup successfull, new user created!", status=201)
+    return get_response(
+        message="Signup successfull, new user created!",
+        user={
+            "id": user.id,
+            "email": user.email,
+            "username": user.username,
+            "firstname": user.firstname,
+            "lastname": user.lastname,
+        },
+        status=201,
+    )
 
 
 @bp.route("/login", methods=("POST",))
@@ -156,9 +166,11 @@ async def login():
     }
 
     # Finding Token in Database
-    uq = await AuthToken.filter(id=user.id).update(token=token, refresh_token=refresh_token)
+    uq = await AuthToken.filter(id=user.id).update(
+        token=token, refresh_token=refresh_token
+    )
 
-    if (not uq):
+    if not uq:
         await AuthToken.create(id=user.id, token=token, refresh_token=refresh_token)
 
     res = get_response()
@@ -231,15 +243,8 @@ async def protected():
             secure=True,
             max_age=timedelta(minutes=30),
         )
-        
+
         return res
 
     else:
         return get_response()
-
-
-        
-            
-
-
-

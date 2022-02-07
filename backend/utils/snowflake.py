@@ -8,7 +8,7 @@ INTERNAL_WORKER_ID_LEFT_SHIFT = 17
 INTERNAL_PROCESS_ID_LEFT_SHIFT = 12
 
 
-class _Snowflake:
+class Snowflake:
     def __init__(self, epoch_ms: int):
         self.epoch_ms = epoch_ms
         self._counter = 0
@@ -26,6 +26,3 @@ class _Snowflake:
         while True:
             yield self.__next__()
 
-
-
-Snowflake = _Snowflake(EPOCH_MILLISECONDS)
