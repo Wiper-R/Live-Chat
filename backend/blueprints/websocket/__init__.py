@@ -47,6 +47,7 @@ async def ws():
     await websocket.accept()
     while True:
         data = await websocket.receive_json()
-        res = await send_message(0, data["target_id"], data["content"])
-        print("Message Sending")
+        # res = await send_message(0, data["target_id"], data["content"])
+        # print("Message Sending")
+        print(data)
 

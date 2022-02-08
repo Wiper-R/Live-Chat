@@ -1,5 +1,5 @@
 import json, time
-from datetime import timezone
+from datetime import timedelta, timezone
 from quart import Response
 from datetime import datetime
 from constants import DATETIME_FORMAT, EPOCH_MILLISECONDS
@@ -19,6 +19,17 @@ def str_to_dt(timestr: str) -> datetime:
 
 def utc_now() -> datetime:
     return datetime.now(tz=timezone.utc)
+
+
+def _set_cookie(response: Response, key: str, value: str, max_age: timedelta):
+    response.set_cookie(
+        key=key,
+        value=value,
+        httponly=True,
+        samesite="None",
+        secure=True,
+        max_age=max_age,
+    )
 
     
 

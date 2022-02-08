@@ -123,6 +123,7 @@ const MenuWrapper = ({ className }) => {
 const Menu = styled(MenuWrapper)`
     img{
         height: 40px;
+        width: 40px;
         object-fit: cover;
     }
 

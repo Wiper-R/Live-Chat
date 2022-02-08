@@ -1,10 +1,10 @@
 from datetime import timedelta
-from quart import Blueprint, jsonify, request
+from quart import Blueprint, request
 import jwt
 from config import JWT_ACCESS_SECRET
 from constants import JWT_ALGORITHIM
-from utils.helpers import UnAuthorized, utc_now
-from models.api import Friend, User
+from utils.helpers import UnAuthorized, utc_now, _set_cookie
+from models.api import User
 from models.auth import AuthToken
 from quart import g
 
@@ -51,22 +51,6 @@ async def serialize_friend(friend):
     return data
 
 
-@bp.route("/friends", methods=("GET",))
-@logged_in
-async def fetch_friends():
-    token = g.access_token
-    payload = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
-    user_id = payload["sub"]
-
-    friends = await Friend.filter(of=user_id).all()
-
-    data = []
-
-    for friend in friends:
-        data.append(await serialize_friend(friend))
-
-    return jsonify(data)
-
 
 @bp.route("/user/<int:user>", methods=("GET",))
 @logged_in
@@ -95,10 +79,11 @@ async def add_token_to_headers():
     token = request.cookies.get("token")
     refresh_token = request.cookies.get("refresh_token")
 
+    g.access_token_renewed = False
+
     if not refresh_token:
         return
 
-    g.access_token_renewed = False
 
     if token:
         try:
@@ -135,16 +120,14 @@ async def add_token_to_headers():
 @bp.after_request
 async def set_access_token_cookie_if_required(response):
     if g.access_token_renewed:
-        response.set_cookie(
-            key="token",
-            value=g.renewed_access_token,
-            httponly=True,
-            samesite="None",
-            secure=True,
-            max_age=timedelta(minutes=30),
-        )
+        _set_cookie(response, "token", g.renewed_access_token, timedelta(minutes=30))
     
     return response
+
+
+@bp.post("/friends/@me")
+async def send_friend_request():
+    body = await request.get_json(force=True)
 
 
     

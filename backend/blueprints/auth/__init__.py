@@ -9,7 +9,7 @@ from serializers import User_Pydantic
 from datetime import datetime, timedelta
 from tortoise.query_utils import Q
 from tortoise.exceptions import DoesNotExist
-from utils.helpers import snowflake
+from utils.helpers import snowflake, _set_cookie
 
 bp = Blueprint("Auth-Blueprint", __name__, url_prefix="/api/auth")
 
@@ -130,6 +130,7 @@ async def login():
     user = await find_user_with_id_pass(username_or_email, password)
 
     if not user:
+        print("HEre")
         return get_response(
             message="This user doesn't exists.",
             status=404,
@@ -174,22 +175,8 @@ async def login():
         await AuthToken.create(id=user.id, token=token, refresh_token=refresh_token)
 
     res = get_response()
-    res.set_cookie(
-        key="token",
-        value=token,
-        httponly=True,
-        samesite="None",
-        secure=True,
-        max_age=timedelta(minutes=30),
-    )
-    res.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        samesite="None",
-        secure=True,
-        max_age=timedelta(days=30),
-    )
+    _set_cookie(res, "token", token, timedelta(minutes=30))
+    _set_cookie(res, "refresh_token", refresh_token, timedelta(days=30))    
     return res
 
 
@@ -234,17 +221,16 @@ async def protected():
         newtoken = jwt.encode(payload, JWT_ACCESS_SECRET, JWT_ALGORITHIM)
         atk.token = newtoken
         await atk.save()
-
-        res.set_cookie(
-            key="token",
-            value=newtoken,
-            httponly=True,
-            samesite="None",
-            secure=True,
-            max_age=timedelta(minutes=30),
-        )
-
+        _set_cookie(res, "token", newtoken, timedelta(minutes=30))
         return res
 
     else:
         return get_response()
+
+
+@bp.route("/logout")
+async def logout():
+    response = get_response()
+    _set_cookie(response, "token", "", timedelta())
+    _set_cookie(response, "refresh_token", "", timedelta())
+    return response
