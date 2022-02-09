@@ -7,7 +7,6 @@ class Client:
         self.id: int = id
         self.ws: Websocket = ws
 
-
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, int):
             return self.id == __o

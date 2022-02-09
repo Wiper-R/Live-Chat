@@ -1,6 +1,6 @@
 import string, re
 
-EMAIL_REGEX = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+EMAIL_REGEX = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
 
 
 def validate_is_strong_password(passw: str):
@@ -9,7 +9,6 @@ def validate_is_strong_password(passw: str):
     # has_digits = False
     # has_alphabets = False
     # has_special_characters = False
-
 
     # if len(passw) < 8:
     #     return False
@@ -30,12 +29,11 @@ def validate_is_strong_password(passw: str):
 
     # if not has_lowercase:
     #     return "Password should contain lowercase letters."
-    
+
     # if not has_uppercase:
     #     return "Password should contain uppercase letters."
 
     return True
-         
 
 
 def validate_email(emailstr: str) -> bool:

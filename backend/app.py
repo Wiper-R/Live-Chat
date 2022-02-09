@@ -5,7 +5,6 @@ from config import TORTOISE
 from blueprints import register_blueprints
 
 
-
 app = Quart(__name__, static_folder="./static/")
 register_blueprints(app)
 

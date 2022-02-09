@@ -19,10 +19,12 @@ class Snowflake:
         timestamp = round(time.time() * 1000 - self.epoch_ms)
         self._counter += 1
         return (
-            timestamp << 22 | self.worker_id << 17 | self.process_id << 12 | (self._counter % 4096)
+            timestamp << 22
+            | self.worker_id << 17
+            | self.process_id << 12
+            | (self._counter % 4096)
         )
 
     def __iter__(self):
         while True:
             yield self.__next__()
-

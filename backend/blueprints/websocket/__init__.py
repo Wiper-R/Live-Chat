@@ -7,6 +7,7 @@ import jwt
 
 clients: List[Client] = []
 
+
 async def add_client(client: Client):
     pc = get_client_with_id(client.id)
     if pc is not None:
@@ -16,12 +17,14 @@ async def add_client(client: Client):
     clients.append(client)
     print("Appended Client")
 
+
 def get_client_with_id(id: int):
     for client in clients:
         if client.id == id:
             return client
 
     return None
+
 
 bp = Blueprint("Websocket-Blueprint", __name__)
 
@@ -42,6 +45,7 @@ async def send_message(author_id: int, target_id: int, content: str):
 
     return False
 
+
 @bp.websocket("/ws")
 async def ws():
     await websocket.accept()
@@ -50,4 +54,3 @@ async def ws():
         # res = await send_message(0, data["target_id"], data["content"])
         # print("Message Sending")
         print(data)
-

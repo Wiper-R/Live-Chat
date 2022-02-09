@@ -176,7 +176,7 @@ async def login():
 
     res = get_response()
     _set_cookie(res, "token", token, timedelta(minutes=30))
-    _set_cookie(res, "refresh_token", refresh_token, timedelta(days=30))    
+    _set_cookie(res, "refresh_token", refresh_token, timedelta(days=30))
     return res
 
 

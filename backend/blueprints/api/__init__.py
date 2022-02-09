@@ -12,7 +12,7 @@ from quart import g
 def logged_in(func):
     async def wrapper(*args, **kwargs):
         try:
-            tt, token = request.headers['AUTHORIZATION'].split(' ')
+            tt, token = request.headers["AUTHORIZATION"].split(" ")
             g.access_token = token
             jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
             return await func(*args, **kwargs)
@@ -51,7 +51,6 @@ async def serialize_friend(friend):
     return data
 
 
-
 @bp.route("/user/<int:user>", methods=("GET",))
 @logged_in
 async def fetch_user(user: int):
@@ -84,7 +83,6 @@ async def add_token_to_headers():
     if not refresh_token:
         return
 
-
     if token:
         try:
             jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
@@ -92,7 +90,7 @@ async def add_token_to_headers():
             token = None
         except jwt.InvalidTokenError:
             return
-    
+
     if not token:
         ## Token is expired, renew it.
         atk = await AuthToken.get_or_none(refresh_token=refresh_token)
@@ -115,17 +113,18 @@ async def add_token_to_headers():
         g.access_token_renewed = True
         g.renewed_access_token = token
 
-    request.headers['AUTHORIZATION'] = f'Bearer {token}'
+    request.headers["AUTHORIZATION"] = f"Bearer {token}"
+
 
 @bp.after_request
 async def set_access_token_cookie_if_required(response):
     if g.access_token_renewed:
         _set_cookie(response, "token", g.renewed_access_token, timedelta(minutes=30))
-    
+
     return response
 
 
 @bp.post("/friends/@me")
 async def send_friend_request():
     data = await request.get_json()
-    print(data);   
+    print(data)

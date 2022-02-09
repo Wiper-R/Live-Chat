@@ -3,19 +3,19 @@ import aiohttp, random
 
 ids = [2, 3, 4]
 
+
 async def main():
     session = aiohttp.ClientSession()
-    ws = await session.ws_connect(
-        'http://127.0.0.1:5000/ws')
+    ws = await session.ws_connect("http://127.0.0.1:5000/ws")
 
-    await ws.send_json(
-            {"client_id": 1}
-        )
+    await ws.send_json({"client_id": 1})
     while True:
-        await ws.send_json({
-            "content": "Hi How are you!",
-            "target_id": random.choice(ids),
-        })        
+        await ws.send_json(
+            {
+                "content": "Hi How are you!",
+                "target_id": random.choice(ids),
+            }
+        )
         d = await ws.receive_json()
         print(d)
         await asyncio.sleep(2)
