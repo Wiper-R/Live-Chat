@@ -127,7 +127,5 @@ async def set_access_token_cookie_if_required(response):
 
 @bp.post("/friends/@me")
 async def send_friend_request():
-    body = await request.get_json(force=True)
-
-
-    
+    data = await request.get_json()
+    print(data);   

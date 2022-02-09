@@ -1,5 +1,11 @@
 @import "~bootstrap/scss/bootstrap";
 
+*{
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
 #copy_username_tooltip.clicked .tooltip-inner{
     background-color: #3ba55d !important;
     font-weight: 500;

@@ -1,6 +1,3 @@
-import Http from "./http";
-import {Logout} from './store/Reducers/AuthReducer';
-
 class GateWay {
   constructor(dispatch) {
     this.dispatch = dispatch;
@@ -23,12 +20,9 @@ class GateWay {
   startListening() {
     this.ws.addEventListener("open", (e) => {
       this.keepAlive();
-      new Http("auth/logout", "GET").request().then(({data, error}) => {
-          this.dispatch(Logout());
-      }) 
     });
 
-    this.ws.addEventListener("close", () => {
+    this.ws.addEventListener("close", (e) => {
       clearInterval(this.keepAliveTimer);
     });
   }
