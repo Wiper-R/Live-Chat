@@ -18,19 +18,18 @@ const ChatApp = () => {
   }
 
   const renderElement = () => {
-    if (activePage == "DEFAULT"){
-      return <ChatWindow />
+    if (activePage == "DEFAULT") {
+      return <ChatWindow />;
+    } else if (activePage == "FRIENDS_PAGE") {
+      return <FriendWindow />;
     }
-    else if (activePage == "FRIENDS_PAGE"){
-      return <FriendWindow/>
-    }
-  }
+  };
 
   return (
-      <div className="d-flex height-100">
-        <Sidebar />
-        {renderElement()}
-      </div>
+    <div className="ChatApp d-flex">
+      <Sidebar />
+      {renderElement()}
+    </div>
   );
 };
 

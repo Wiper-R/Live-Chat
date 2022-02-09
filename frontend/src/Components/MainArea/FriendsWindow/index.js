@@ -1,18 +1,17 @@
 import styled from "styled-components";
 import Header from "./Header";
 
-
-const FriendWindowWrapper = ({className}) => {
+const FriendWindowWrapper = ({ className }) => {
   return (
-  <div className={`container-fluid ${className}`}>
-    <Header/>
-  </div>
+    <div className={`container-fluid ${className}`}>
+      <Header />
+    </div>
   );
 };
 
 const FriendWindow = styled(FriendWindowWrapper)`
-padding: 0;
-margin: 0;
+  padding: 0;
+  margin: 0;
 `;
 
 export default FriendWindow;
