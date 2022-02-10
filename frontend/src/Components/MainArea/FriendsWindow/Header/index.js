@@ -1,7 +1,28 @@
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import { ChangeActivePage } from "../../../../store/Reducers/VariablesReducer/ActivePageReducer";
+import { RelationshipFilterChanged } from "../../../../store/Reducers/VariablesReducer/RelationshipReducer";
 
 const HeaderWrapper = ({ className }) => {
+  const dispatch = useDispatch();
+  const activePage = useSelector((state) => {
+    return state.variables.activePage;
+  });
+
+  const ChangeFilter = (filter) => () => {
+    if (activePage[1] !== undefined) {
+      dispatch(ChangeActivePage(["FRIENDS"]));
+    }
+    dispatch(RelationshipFilterChanged(filter));
+  };
+
+  const onAddFriendButton = () => {
+    if (activePage[1] === undefined) {
+      dispatch(ChangeActivePage(["FRIENDS", "ADD_FRIEND"]));
+    }
+  };
+
   useEffect(() => {
     const nav_items = document.querySelectorAll(`.friends-nav li`);
     nav_items.forEach((e) => {
@@ -21,10 +42,14 @@ const HeaderWrapper = ({ className }) => {
         <span>Friends</span>
       </div>
       <ul className="nav friends-nav">
-        <li className="active">Online</li>
-        <li>All</li>
-        <li>Pending</li>
-        <li className="add-friend">Add Friend</li>
+        <li className="active" onClick={ChangeFilter("online")}>
+          Online
+        </li>
+        <li onClick={ChangeFilter("all")}>All</li>
+        <li onClick={ChangeFilter("pending")}>Pending</li>
+        <li className="add-friend" onClick={onAddFriendButton}>
+          Add Friend
+        </li>
       </ul>
     </div>
   );

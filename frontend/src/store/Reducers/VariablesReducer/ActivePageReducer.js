@@ -15,14 +15,14 @@ const UnselectActivePage = () => {
 };
 
 // Page Reducer
-const State = "DEFAULT";
+const State = [];
 
 const ActivePageReducer = (state = State, action) => {
   switch (action.type) {
     case CHANGE_ACTIVE_PAGE:
-      return action.payload;
+      return [...action.payload];
     case UNSELECT_ACTIVE_PAGE:
-      return "DEFAULT";
+      return [];
     default:
       return state;
   }

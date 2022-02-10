@@ -18,9 +18,9 @@ const ChatApp = () => {
   }
 
   const renderElement = () => {
-    if (activePage == "DEFAULT") {
+    if (activePage[0] === undefined) {
       return <ChatWindow />;
-    } else if (activePage == "FRIENDS_PAGE") {
+    } else if (activePage[0] === "FRIENDS") {
       return <FriendWindow />;
     }
   };

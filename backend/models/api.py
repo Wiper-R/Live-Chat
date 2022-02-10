@@ -30,6 +30,6 @@ class User(models.Model):
 
 class RelationShip(models.Model):
     id = fields.BigIntField(default=snowflake.__next__, pk=True)
-    of = fields.ForeignKeyField("api.User")
-    user = fields.ForeignKeyField("api.User", related_name="with")
+    of = fields.ForeignKeyField("api.User", related_name="of")
+    user = fields.ForeignKeyField("api.User", related_name="user")
     type = fields.IntEnumField(RelationshipType)

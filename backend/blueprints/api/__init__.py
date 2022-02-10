@@ -1,10 +1,11 @@
 from datetime import timedelta
-from quart import Blueprint, request
+from quart import Blueprint, jsonify, request
 import jwt
 from config import JWT_ACCESS_SECRET
 from constants import JWT_ALGORITHIM
+from serializers import RelationShip_Pydantic
 from utils.helpers import UnAuthorized, utc_now, _set_cookie
-from models.api import User
+from models.api import RelationShip, User
 from models.auth import AuthToken
 from quart import g
 
@@ -123,6 +124,17 @@ async def set_access_token_cookie_if_required(response):
 
     return response
 
+
+@bp.get("/relationships")
+@logged_in
+async def fetch_relationships():
+    token = g.access_token
+    payload = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
+    sub = payload["sub"]
+    relationships = await RelationShip.filter(of_id=sub).all()
+    return jsonify(
+        list(map(RelationShip_Pydantic, relationships))
+    )
 
 @bp.post("/friends/@me")
 async def send_friend_request():

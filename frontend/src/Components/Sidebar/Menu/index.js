@@ -145,7 +145,7 @@ const MenuWrapper = ({ className }) => {
         >
           <button
             className="d-block"
-            onClick={() => dispatch(ChangeActivePage("FRIENDS_PAGE"))}
+            onClick={() => dispatch(ChangeActivePage(["FRIENDS"]))}
           >
             <i className="fa fa-users me-1 fa-fw" />
           </button>
