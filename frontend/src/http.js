@@ -36,10 +36,12 @@ class Http {
           data = await res.text();
         }
       } else {
-        error = res.status;
+        data = await res.json();
+        error = { status: res.status, message: data.message };
+        console.log(error);
       }
     } catch (e) {
-      error = e;
+      error = { status: null, message: e.toString() };
     }
 
     return { data, error };

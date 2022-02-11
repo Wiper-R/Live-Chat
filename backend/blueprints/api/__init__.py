@@ -3,9 +3,8 @@ from quart import Blueprint, jsonify, request
 import jwt
 from config import JWT_ACCESS_SECRET
 from constants import JWT_ALGORITHIM
-from serializers import RelationShip_Pydantic
-from utils.helpers import UnAuthorized, utc_now, _set_cookie
-from models.api import RelationShip, User
+from utils.helpers import UnAuthorized, get_response, utc_now, _set_cookie
+from models.api import RelationShip, RelationshipType, User
 from models.auth import AuthToken
 from quart import g
 
@@ -67,10 +66,7 @@ async def fetch_user(user: int):
 @bp.route("/user/@me", methods=("GET",))
 @logged_in
 async def get_current_user():
-    token = g.access_token
-    payload = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
-    sub = payload["sub"]
-    user = await User.get(id=sub)
+    user = await User.get(id=g.sub)
     return safe_user(user)
 
 
@@ -114,6 +110,8 @@ async def add_token_to_headers():
         g.access_token_renewed = True
         g.renewed_access_token = token
 
+    pay = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
+    g.sub = pay["sub"]
     request.headers["AUTHORIZATION"] = f"Bearer {token}"
 
 
@@ -125,18 +123,74 @@ async def set_access_token_cookie_if_required(response):
     return response
 
 
-@bp.get("/relationships")
-@logged_in
-async def fetch_relationships():
-    token = g.access_token
-    payload = jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
-    sub = payload["sub"]
-    relationships = await RelationShip.filter(of_id=sub).all()
-    return jsonify(
-        list(map(RelationShip_Pydantic, relationships))
-    )
-
-@bp.post("/friends/@me")
+@bp.post("/relationships/@me")
 async def send_friend_request():
     data = await request.get_json()
-    print(data)
+    username = data["username"]
+
+    if username.startswith("@"):
+        username = username[1:]
+
+    to = await User.get_or_none(username=username)
+
+    if to is None:
+        return get_response(status=404, message="Can't find user with that username.")
+
+    relationship = await RelationShip.get_or_none(of_id=g.sub, to_id=to.id)
+    relationship_other = await RelationShip.get_or_none(of_id=to.id, to_id=g.sub)
+
+    if relationship and relationship.type == RelationshipType.pending_incoming:
+        relationship.type = RelationshipType.friends
+        await relationship.save()
+
+        relationship_other.type = RelationshipType.friends
+        await relationship_other.save()
+
+    if not relationship:
+        relationship = await RelationShip.create(
+            of_id=g.sub,
+            to_id=to.id,
+            type=RelationshipType.pending_outgoing,
+        )
+        await RelationShip.create(
+            of_id=to.id,
+            to_id=g.sub,
+            type=RelationshipType.pending_incoming,
+        )
+
+    serialized = {
+        "id": relationship.id,
+        "to": safe_user(to),
+    }
+
+    return get_response(**serialized)
+
+
+@bp.get("/relationships/@me/friends")
+@logged_in
+async def fetch_friends():
+    relationships = await RelationShip.filter(
+        of_id=g.sub, type=RelationshipType.friends
+    ).all()
+
+    data = []
+
+    for relationship in relationships:
+        data.append({"id": relationship.id, "to": safe_user(await relationship.to)})
+
+    return jsonify(data)
+
+
+@bp.get("/relationships/@me/incoming")
+@logged_in
+async def fetch_incoming_relationships():
+    relationships = await RelationShip.filter(
+        of_id=g.sub, type=RelationshipType.pending_incoming
+    ).all()
+
+    data = []
+
+    for relationship in relationships:
+        data.append({"id": relationship.id, "to": safe_user(await relationship.to)})
+
+    return jsonify(data)

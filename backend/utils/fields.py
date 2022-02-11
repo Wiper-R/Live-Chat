@@ -1,5 +1,5 @@
 import re
-
+from utils.helpers import snowflake
 from tortoise.fields import Field
 from typing import Any
 
@@ -15,3 +15,10 @@ class EmailField(Field, str):
         if re.fullmatch(EMAIL_REGEX, value):
             return True
         return False
+
+
+class SnowflakeField(Field, int):
+    def __init__(self, **kwargs: Any) -> None:
+        self.SQL_TYPE = "BIGINT"
+        kwargs["default"] = kwargs.get("default", snowflake.__next__)
+        super().__init__(**kwargs)

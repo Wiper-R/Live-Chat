@@ -1,6 +1,6 @@
 from tortoise import models
 from tortoise import fields
-from utils.fields import EmailField
+from utils.fields import EmailField, SnowflakeField
 from enum import IntEnum
 from utils.helpers import snowflake
 
@@ -12,7 +12,7 @@ class RelationshipType(IntEnum):
 
 
 class Message(models.Model):
-    id = fields.BigIntField(pk=True, default=snowflake.__next__)
+    id = SnowflakeField(pk=True)
     content = fields.TextField()
     author = fields.ForeignKeyField("api.User", related_name="author")
     recipient = fields.ForeignKeyField("api.User", related_name="recipient")
@@ -20,7 +20,7 @@ class Message(models.Model):
 
 
 class User(models.Model):
-    id = fields.BigIntField(pk=True, default=snowflake.__next__)
+    id = SnowflakeField(pk=True)
     username = fields.CharField(max_length=255, unique=True)
     firstname = fields.CharField(max_length=25)
     lastname = fields.CharField(max_length=25)
@@ -29,7 +29,10 @@ class User(models.Model):
 
 
 class RelationShip(models.Model):
-    id = fields.BigIntField(default=snowflake.__next__, pk=True)
+    id = SnowflakeField(pk=True)
     of = fields.ForeignKeyField("api.User", related_name="of")
-    user = fields.ForeignKeyField("api.User", related_name="user")
+    to = fields.ForeignKeyField("api.User", related_name="to")
     type = fields.IntEnumField(RelationshipType)
+
+    class Meta:
+        unique_together = ("of_id", "to_id", "type")

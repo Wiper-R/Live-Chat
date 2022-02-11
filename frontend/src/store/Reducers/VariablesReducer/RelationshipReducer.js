@@ -34,13 +34,15 @@ const RelationshipFilterChanged = (filter) => {
 
 const LoadRelationships = () => (dispatch, getState) => {
   dispatch(RelationshipsLoading());
-  new Http("relationships", "GET").request().then(({ data, error }) => {
-    if (!error) {
-      dispatch(RelationshipsLoaded(data));
-    } else {
-      dispatch(RelationshipsLoadingFailed(error));
-    }
-  });
+  new Http("relationships/@me/friends", "GET")
+    .request()
+    .then(({ data, error }) => {
+      if (!error) {
+        dispatch(RelationshipsLoaded(data));
+      } else {
+        dispatch(RelationshipsLoadingFailed(error));
+      }
+    });
 };
 
 // Reducer
