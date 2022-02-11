@@ -58,6 +58,7 @@ const MenuSkeleton = styled(MenuSkeletonWrapper)`
 `;
 const MenuWrapper = ({ className }) => {
   const dispatch = useDispatch();
+  const activePage = useSelector((state) => state.variables.activePage);
   const [content, setContent] = useState("Click to copy username");
   const [show, setShow] = useState(false);
   const { user } = useSelector((state) => state.auth);
@@ -146,7 +147,16 @@ const MenuWrapper = ({ className }) => {
           delay={{ show: 0, hide: 0 }}
         >
           <button
-            onClick={() => dispatch(ChangeActivePage(["FRIENDS"]))}
+            onClick={() => {
+              if (activePage[0] !== "FRIENDS") {
+                dispatch(
+                  ChangeActivePage([
+                    "FRIENDS",
+                    ...activePage.slice(1, activePage.length),
+                  ])
+                );
+              }
+            }}
             className="me-1"
           >
             <BsFillPeopleFill className="icon" />

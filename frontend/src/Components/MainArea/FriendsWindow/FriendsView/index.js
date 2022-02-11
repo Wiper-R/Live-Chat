@@ -3,7 +3,7 @@ import { FaEllipsisH } from "react-icons/fa";
 import { BsFillChatRightDotsFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
 
-const EntryWrapper = ({ className, isPending=false, to }) => {
+const EntryWrapper = ({ className, isPending = false, to }) => {
   return (
     <div className={`${className} d-flex justify-content-between`}>
       <div className="left">
@@ -87,12 +87,12 @@ const Entry = styled(EntryWrapper)`
 `;
 
 const FreindsViewWrapper = ({ className }) => {
-    const relationships = useSelector(state => state.variables.relationships);
+  const relationships = useSelector((state) => state.variables.relationships);
   return (
     <div className={`container-fluid ${className}`}>
-        {
-            relationships.data.map((e) => <Entry to={e.to}/>)
-        }
+      {relationships.data.map((e) => (
+        <Entry to={e.to} />
+      ))}
     </div>
   );
 };

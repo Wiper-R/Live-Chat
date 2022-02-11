@@ -9,13 +9,13 @@ import Header from "./Header";
 
 const FriendWindowWrapper = ({ className }) => {
   const dispatch = useDispatch();
-  const activePage = useSelector((state) => state.variables.activePage[1]);
+  const activePage = useSelector((state) => state.variables.activePage);
   useEffect(() => {
     dispatch(LoadRelationships());
   }, []);
 
   const renderElement = () => {
-    if (activePage === "ADD_FRIEND") {
+    if (activePage[1] === "ADD_FRIEND") {
       return <AddFriend />;
     } else {
       return <FriendsView />;

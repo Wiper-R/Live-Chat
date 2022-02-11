@@ -3,7 +3,6 @@ import Http from "../../../http";
 const RELATIONSHIPS_LOADED = "RELATIONSHIPS_LOADED";
 const RELATIONSHIPS_LOADING = "RELATIONSHIPS_LOADING";
 const RELATIONSHIPS_LOADING_FAILED = "RELATIONSHIPS_LOADING_FAILED";
-const RELATIONSHIP_FILTER_CHANGED = "RELATIONSHIP_FILTER_CHANGED";
 
 const RelationshipsLoading = () => {
   return {
@@ -25,13 +24,6 @@ const RelationshipsLoadingFailed = (err) => {
   };
 };
 
-const RelationshipFilterChanged = (filter) => {
-  return {
-    type: RELATIONSHIP_FILTER_CHANGED,
-    payload: filter,
-  };
-};
-
 const LoadRelationships = () => (dispatch, getState) => {
   dispatch(RelationshipsLoading());
   new Http("relationships/@me", "GET").request().then(({ data, error }) => {
@@ -47,7 +39,6 @@ const LoadRelationships = () => (dispatch, getState) => {
 const State = {
   data: [],
   isFetching: false,
-  filter: "online",
 };
 
 const RelationshipReducer = (state = State, action) => {
@@ -73,16 +64,10 @@ const RelationshipReducer = (state = State, action) => {
         data: [],
       };
 
-    case RELATIONSHIP_FILTER_CHANGED:
-      return {
-        ...state,
-        filter: action.payload,
-      };
-
     default:
       return state;
   }
 };
 
 export default RelationshipReducer;
-export { RelationshipFilterChanged, LoadRelationships };
+export { LoadRelationships };
