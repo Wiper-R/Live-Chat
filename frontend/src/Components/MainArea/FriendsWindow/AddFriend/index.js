@@ -14,8 +14,9 @@ const AddFriendWrapper = ({ className }) => {
     }
     add_friend_input.addEventListener("input", (e) => {
       ResetMessage();
-      var value = e.target.value.replace(/\s+/g, " ").trim();
+      var value = e.target.value.replace(" ", "");
       sessionStorage.setItem("add_friend_input", value);
+      e.target.value = value;
       if (value && disabled) {
         return setDisabled(false);
       } else {
@@ -111,7 +112,7 @@ const AddFriend = styled(AddFriendWrapper)`
   }
 
   input {
-    width: 800px;
+    width: 90%;
     padding: 14px;
     border-radius: 5px;
     outline: none;

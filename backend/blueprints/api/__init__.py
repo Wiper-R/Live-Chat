@@ -7,6 +7,7 @@ from utils.helpers import UnAuthorized, get_response, utc_now, _set_cookie
 from models.api import RelationShip, RelationshipType, User
 from models.auth import AuthToken
 from quart import g
+from tortoise.queryset import Q
 
 
 def logged_in(func):
@@ -39,16 +40,11 @@ def safe_user(user):
     for field in fields:
         data[field] = getattr(user, field)
 
+        if field == "id":
+            data[field] = str(data[field])
+
     return data
 
-
-async def serialize_friend(friend):
-    data = {
-        "id": friend.id,
-        "of": friend.of_id,
-        "user": safe_user(await friend.user),
-    }
-    return data
 
 
 @bp.route("/user/<int:user>", methods=("GET",))
@@ -159,38 +155,26 @@ async def send_friend_request():
         )
 
     serialized = {
-        "id": relationship.id,
+        "id": str(relationship.id),
         "to": safe_user(to),
     }
 
     return get_response(**serialized)
 
 
-@bp.get("/relationships/@me/friends")
+@bp.get("/relationships/@me")
 @logged_in
-async def fetch_friends():
+async def fetch_relationships():
     relationships = await RelationShip.filter(
-        of_id=g.sub, type=RelationshipType.friends
+        ~Q(type=RelationshipType.pending_outgoing), of_id=g.sub
     ).all()
-
     data = []
-
     for relationship in relationships:
-        data.append({"id": relationship.id, "to": safe_user(await relationship.to)})
-
-    return jsonify(data)
-
-
-@bp.get("/relationships/@me/incoming")
-@logged_in
-async def fetch_incoming_relationships():
-    relationships = await RelationShip.filter(
-        of_id=g.sub, type=RelationshipType.pending_incoming
-    ).all()
-
-    data = []
-
-    for relationship in relationships:
-        data.append({"id": relationship.id, "to": safe_user(await relationship.to)})
-
+        data.append(
+            {
+                "id": str(relationship.id),
+                "to": safe_user(await relationship.to),
+                "type": relationship.type.__str__(),
+            }
+        )
     return jsonify(data)

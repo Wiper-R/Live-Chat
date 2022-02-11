@@ -4,6 +4,8 @@ import { Tooltip } from "react-bootstrap";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ChangeActivePage } from "../../../store/Reducers/VariablesReducer/ActivePageReducer";
+import { FaCog } from "react-icons/fa";
+import { BsFillPeopleFill } from "react-icons/bs";
 
 const BasicToolTip = (text) => (props) => {
   return (
@@ -144,10 +146,10 @@ const MenuWrapper = ({ className }) => {
           delay={{ show: 0, hide: 0 }}
         >
           <button
-            className="d-block"
             onClick={() => dispatch(ChangeActivePage(["FRIENDS"]))}
+            className="me-1"
           >
-            <i className="fa fa-users me-1 fa-fw" />
+            <BsFillPeopleFill className="icon" />
           </button>
         </OverlayTrigger>
         <OverlayTrigger
@@ -155,8 +157,8 @@ const MenuWrapper = ({ className }) => {
           overlay={BasicToolTip("User Settings")}
           delay={{ show: 0, hide: 0 }}
         >
-          <button className="d-block">
-            <i className="fas fa-cog fa-fw" />
+          <button>
+            <FaCog className="icon" />
           </button>
         </OverlayTrigger>
       </div>
@@ -203,10 +205,13 @@ const Menu = styled(MenuWrapper)`
     color: #c7c6c5;
     outline: none;
     border: none;
-    padding: 4px 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 4px;
     transition: background-color 0.2s ease-in-out;
     font-size: 1rem;
+    padding: 5px;
 
     &:hover {
       background-color: #36393f;

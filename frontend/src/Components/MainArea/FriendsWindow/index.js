@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { LoadRelationships } from "../../../store/Reducers/VariablesReducer/RelationshipReducer";
 import AddFriend from "./AddFriend";
+import FriendsView from "./FriendsView";
 import Header from "./Header";
 
 const FriendWindowWrapper = ({ className }) => {
@@ -16,6 +17,8 @@ const FriendWindowWrapper = ({ className }) => {
   const renderElement = () => {
     if (activePage === "ADD_FRIEND") {
       return <AddFriend />;
+    } else {
+      return <FriendsView />;
     }
   };
   return (
