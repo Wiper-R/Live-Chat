@@ -120,6 +120,7 @@ const AddFriend = styled(AddFriendWrapper)`
     background-color: #303238;
     color: white;
     padding-left: 20px;
+    padding-right: 180px;
 
     &:focus {
       border: 1.5px solid skyblue;

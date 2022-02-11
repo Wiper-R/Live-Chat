@@ -33,7 +33,7 @@ const HeaderWrapper = ({ className }) => {
         e.target.classList.add("active");
       });
     });
-  });
+  }, []);
 
   return (
     <div className={`${className}`}>

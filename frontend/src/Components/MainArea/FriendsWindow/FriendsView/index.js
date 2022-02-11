@@ -1,13 +1,14 @@
 import styled from "styled-components";
 import { FaEllipsisH } from "react-icons/fa";
 import { BsFillChatRightDotsFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
-const EntryWrapper = ({ className, isPending }) => {
+const EntryWrapper = ({ className, isPending=false, to }) => {
   return (
     <div className={`${className} d-flex justify-content-between`}>
       <div className="left">
         <img src="http://127.0.0.1:5000/static/profiles/default.png" alt="" />
-        <span>Sachin Rathore</span>
+        <span>{`${to.firstname} ${to.lastname}`}</span>
       </div>
       <div className="right">
         <button>
@@ -23,6 +24,7 @@ const EntryWrapper = ({ className, isPending }) => {
 
 const Entry = styled(EntryWrapper)`
   position: relative;
+  cursor: pointer;
   &:before {
     position: absolute;
     display: block;
@@ -85,11 +87,12 @@ const Entry = styled(EntryWrapper)`
 `;
 
 const FreindsViewWrapper = ({ className }) => {
+    const relationships = useSelector(state => state.variables.relationships);
   return (
     <div className={`container-fluid ${className}`}>
-      <Entry isPending={false} />
-      <Entry isPending={false} />
-      <Entry isPending={false} />
+        {
+            relationships.data.map((e) => <Entry to={e.to}/>)
+        }
     </div>
   );
 };
