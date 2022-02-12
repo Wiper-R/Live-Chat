@@ -27,24 +27,27 @@ const TopAreaSkeleton = styled(TopAreaSkeletonWrapper)`
 `;
 
 const TopAreaWrapper = ({ className }) => {
-  const selectedChat = useSelector((state) => state.variables.selectedChat);
+  const selectedChannelId = useSelector(
+    (state) => state.variables.selectedChannel.id
+  );
+  const user = useSelector((state) => state.auth.user);
+  const channel = useSelector((state) =>
+    state.variables.channels.data.filter((ch) => ch.id === selectedChannelId)[0]
+  );
+  const otherUser = channel.recipients.filter((o) => o.id !== user.id)[0];
   return (
     <div
       className={`p-2 d-flex ${className} justify-content-between align-items-center`}
     >
-      {!selectedChat.isFetching ? (
-        <div className="user d-flex align-items-center">
-          <img
-            src={`http://127.0.0.1:5000/static/profiles/${selectedChat.id}.png`}
-            alt=""
-            className="avatar rounded-circle"
-          />
-          <span className="fullname">{`${selectedChat.user.firstname} ${selectedChat.user.lastname}`}</span>
-        </div>
-      ) : (
-        <TopAreaSkeleton />
-      )}
-
+      <div className="user d-flex align-items-center">
+        <img
+          src={`http://127.0.0.1:5000/static/profiles/${otherUser.id}.png`}
+          alt=""
+          className="avatar rounded-circle"
+        />
+        <span className="fullname">{`${otherUser.firstname} ${otherUser.lastname}`}</span>
+      </div>
+      )
       <div className="top-nav">
         <button className="btn btn-transparent text-white">
           <i className="fa fa-search"></i>

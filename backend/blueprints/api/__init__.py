@@ -1,13 +1,14 @@
 from datetime import timedelta
-from quart import Blueprint, jsonify, request
+from quart import Blueprint, current_app, jsonify, request
 import jwt
 from config import JWT_ACCESS_SECRET
 from constants import JWT_ALGORITHIM
 from utils.helpers import UnAuthorized, get_response, utc_now, _set_cookie
-from models.api import RelationShip, RelationshipType, User
+from models.api import Channel, RelationShip, RelationshipType, User
 from models.auth import AuthToken
 from quart import g
 from tortoise.queryset import Q
+from tortoise.functions import Count
 
 
 def logged_in(func):
@@ -17,7 +18,8 @@ def logged_in(func):
             g.access_token = token
             jwt.decode(token, JWT_ACCESS_SECRET, [JWT_ALGORITHIM])
             return await func(*args, **kwargs)
-        except (KeyError, jwt.PyJWTError, IndexError):
+        except (KeyError, jwt.PyJWTError, IndexError) as e:
+            print(e)
             return UnAuthorized
 
     wrapper.__name__ = func.__name__
@@ -44,7 +46,6 @@ def safe_user(user):
             data[field] = str(data[field])
 
     return data
-
 
 
 @bp.route("/user/<int:user>", methods=("GET",))
@@ -178,3 +179,32 @@ async def fetch_relationships():
             }
         )
     return jsonify(data)
+
+
+@bp.post("/channels/@me")
+@logged_in
+async def create_channel():
+    data = await request.get_json()
+    recipient_id = data["recipient_id"]
+
+    count, row = await current_app.con.execute_query(
+        "SELECT channel_id from channel_user WHERE user_id in (?, ?) GROUP by channel_id HAVING COUNT(*) == 2 LIMIT 1;",
+        (g.sub, recipient_id),
+    )
+
+    channel = None
+
+    if count >= 1:
+        channel = await Channel.get(id=row[0]['channel_id'])
+        await channel.fetch_related("recipients")
+
+    if not channel:
+        current_user = await User.get(id=g.sub)
+        other_user = await User.get(id=recipient_id)
+        channel = await Channel.create()
+        await channel.recipients.add(current_user, other_user)
+
+    return jsonify({
+        'id': str(channel.id),
+        'recipients': [safe_user(user) for user in channel.recipients]
+    })

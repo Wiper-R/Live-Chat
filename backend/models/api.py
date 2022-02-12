@@ -36,3 +36,8 @@ class RelationShip(models.Model):
 
     class Meta:
         unique_together = ("of_id", "to_id", "type")
+
+
+class Channel(models.Model):
+    id = SnowflakeField(pk=True)
+    recipients = fields.ManyToManyField("api.User", related_name="recipients")

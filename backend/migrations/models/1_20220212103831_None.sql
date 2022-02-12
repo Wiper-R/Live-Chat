@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS "authtoken" (
     "token" TEXT,
     "refresh_token" TEXT
 );
+CREATE TABLE IF NOT EXISTS "channel" (
+    "id" BIGINT NOT NULL  PRIMARY KEY
+);
 CREATE TABLE IF NOT EXISTS "user" (
     "id" BIGINT NOT NULL  PRIMARY KEY,
     "username" VARCHAR(255) NOT NULL UNIQUE,
@@ -31,4 +34,8 @@ CREATE TABLE IF NOT EXISTS "relationship" (
     "of_id" BIGINT NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
     "to_id" BIGINT NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
     CONSTRAINT "uid_relationshi_of_id_7ada18" UNIQUE ("of_id", "to_id", "type")
+);
+CREATE TABLE IF NOT EXISTS "channel_user" (
+    "channel_id" BIGINT NOT NULL REFERENCES "channel" ("id") ON DELETE CASCADE,
+    "user_id" BIGINT NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE
 );

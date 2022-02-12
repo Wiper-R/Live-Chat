@@ -8,7 +8,8 @@ import { useSelector } from "react-redux";
 const RecentsChatWrapper = ({ className }) => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const Channels = useSelector((state) => state.variables.Channels);
+  const user = useSelector((state) => state.auth.user);
+  const channels = useSelector((state) => state.variables.channels);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -19,14 +20,14 @@ const RecentsChatWrapper = ({ className }) => {
   return (
     <div className={`d-flex flex-column flex-grow-1 mb-auto ${className}`}>
       {!Channels.isFetching ? (
-        Channels.data.map((e) => (
-          <Channel
-            key={e.user.username}
-            fullname={`${e.user.firstname} ${e.user.lastname}`}
-            username={e.user.username}
-            id={e.user.id}
+        channels.data.map((e) => {
+          const other = e.recipients.filter((o) => o.id !== user.id)[0];
+          return <Channel
+            key={e.id}
+            id={e.id}
+            user={other}
           />
-        ))
+        })
       ) : (
         <></>
       )}
@@ -54,6 +55,8 @@ const Channels = styled(RecentsChatWrapper)`
   &:hover::-webkit-scrollbar-thumb {
     background: #737874;
   }
+
+  height: 0;
 
   overflow-y: scroll;
   overflow-x: hidden;

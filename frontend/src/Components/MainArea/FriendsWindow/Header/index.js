@@ -10,15 +10,17 @@ const HeaderWrapper = ({ className }) => {
     return state.variables.activePage;
   });
 
-  if (activePage[1] === undefined) {
-    dispatch(
-      ChangeActivePage([
-        "FRIENDS",
-        "ONLINE",
-        ...activePage.slice(2, activePage.length),
-      ])
-    );
-  }
+  useEffect(() => {
+    if (activePage[1] === undefined) {
+      dispatch(
+        ChangeActivePage([
+          "FRIENDS",
+          "ONLINE",
+          ...activePage.slice(2, activePage.length),
+        ])
+      );
+    }
+  }, [activePage])
 
   const ChangeFilter = (filter) => () => {
     if (activePage[1] !== filter) {

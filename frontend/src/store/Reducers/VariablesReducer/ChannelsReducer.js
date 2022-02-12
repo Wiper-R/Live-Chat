@@ -1,26 +1,42 @@
 import Http from "../../../http";
 
 // Actions
-const RECENT_CHATS_LOADING = "RECENT_CHATS_LOADING";
-const RECENT_CHATS_LOADED = "RECENT_CHATS_LOADED";
-const RECENT_CHATS_LOADING_FAILED = "RECENT_CHATS_LOADING_FAILED";
+const CHANNELS_LOADING = "CHANNELS_LOADING";
+const CHANNELS_LOADED = "CHANNELS_LOADED";
+const CHANNELS_LOADING_FAILED = "CHANNELS_LOADING_FAILED";
+const CHANNEL_CREATED = "CHANNEL_CREATED";
+const CHANNEL_DELETED = "CHANNEL_DELETED";
+
+const ChannelCreated = (channel) => {
+  return {
+    type: CHANNEL_CREATED,
+    payload: channel,
+  };
+};
+
+const ChannelDeleted = (channel) => {
+  return {
+    type: CHANNEL_DELETED,
+    payload: channel,
+  };
+};
 
 const ChannelLoading = () => {
   return {
-    type: RECENT_CHATS_LOADING,
+    type: CHANNELS_LOADING,
   };
 };
 
 const ChannelLoaded = (payload) => {
   return {
-    type: RECENT_CHATS_LOADED,
+    type: CHANNELS_LOADED,
     payload,
   };
 };
 
 const ChannelLoadingFailed = () => {
   return {
-    type: RECENT_CHATS_LOADING_FAILED,
+    type: CHANNELS_LOADING_FAILED,
   };
 };
 
@@ -44,6 +60,7 @@ const LoadChannels = () => (dispatch, _) => {
   //     dispatch(ChannelLoadingFailed());
   // }
   // new Http("friends/", "GET").then()
+  dispatch(ChannelLoaded([]));
 };
 
 // Reducer Itself
@@ -55,24 +72,38 @@ const State = {
 
 const ChannelReducers = (state = State, action) => {
   switch (action.type) {
-    case RECENT_CHATS_LOADING:
+    case CHANNELS_LOADING:
       return {
         ...state,
         isFetching: true,
       };
 
-    case RECENT_CHATS_LOADED:
+    case CHANNELS_LOADED:
       return {
         ...state,
         isFetching: false,
         data: action.payload,
       };
 
-    case RECENT_CHATS_LOADING_FAILED:
+    case CHANNELS_LOADING_FAILED:
       return {
         ...state,
         isFetching: false,
-        data: [],
+      };
+
+    case CHANNEL_CREATED:
+      if (state.data.filter((e) => e.id === action.payload.id).length > 0){
+        return state;
+      }
+      return {
+        ...state,
+        data: [...state.data, action.payload],
+      };
+
+    case CHANNEL_DELETED:
+      return {
+        ...state,
+        data: state.data.filter((ch) => ch.id != action.payload.id),
       };
 
     default:
@@ -81,4 +112,4 @@ const ChannelReducers = (state = State, action) => {
 };
 
 export default ChannelReducers;
-export { LoadChannels };
+export { LoadChannels, ChannelDeleted, ChannelCreated };

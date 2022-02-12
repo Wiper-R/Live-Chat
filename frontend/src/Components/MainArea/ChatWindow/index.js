@@ -18,7 +18,7 @@ const Wrapper = () => {
 
 const ChatWindowWrapper = ({ className }) => {
   const selectedChatId = useSelector(
-    (state) => state.variables.selectedChat.id
+    (state) => state.variables.selectedChannel?.id
   );
   return (
     <div className={`container-fluid d-flex flex-column ${className} p-0`}>

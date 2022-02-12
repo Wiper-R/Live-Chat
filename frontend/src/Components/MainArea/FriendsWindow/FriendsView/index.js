@@ -2,10 +2,33 @@ import styled from "styled-components";
 import { FaEllipsisH } from "react-icons/fa";
 import { BsFillChatRightDotsFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
+import Http from "../../../../http";
+import { useDispatch } from "react-redux";
+import { ChannelCreated } from "../../../../store/Reducers/VariablesReducer/ChannelsReducer";
+import { ChangeActivePage } from "../../../../store/Reducers/VariablesReducer/ActivePageReducer";
 
 const EntryWrapper = ({ className, isPending = false, to }) => {
+  const optionsRef = useRef();
+  const dispatch = useDispatch();
   return (
-    <div className={`${className} d-flex justify-content-between`}>
+    <div
+      className={`${className} d-flex justify-content-between`}
+      onClick={(e) => {
+        if (!optionsRef.current.contains(e.target)) {
+          new Http("channels/@me", "POST", null, {
+            recipient_id: to.id,
+          })
+            .request()
+            .then(({ data, error }) => {
+              if (!error){
+                dispatch(ChannelCreated(data));
+                dispatch(ChangeActivePage([]))
+              }
+            });
+        }
+      }}
+    >
       <div className="left">
         <img src="http://127.0.0.1:5000/static/profiles/default.png" alt="" />
         <span>{`${to.firstname} ${to.lastname}`}</span>
@@ -14,7 +37,7 @@ const EntryWrapper = ({ className, isPending = false, to }) => {
         <button>
           <BsFillChatRightDotsFill />
         </button>
-        <button>
+        <button ref={optionsRef}>
           <FaEllipsisH />
         </button>
       </div>
@@ -91,7 +114,7 @@ const FreindsViewWrapper = ({ className }) => {
   return (
     <div className={`container-fluid ${className}`}>
       {relationships.data.map((e) => (
-        <Entry to={e.to} />
+        <Entry to={e.to} key={e.id} />
       ))}
     </div>
   );
