@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from tortoise.query_utils import Q
 from tortoise.exceptions import DoesNotExist
 from utils.helpers import snowflake, _set_cookie
+from ..api import logged_in
 
 bp = Blueprint("Auth-Blueprint", __name__, url_prefix="/api/auth")
 
@@ -89,7 +90,6 @@ async def signup():
         email=email,
         password=password,
     )
-    await AuthToken.create(id=user.id)
     return get_response(
         message="Signup successfull, new user created!",
         user={
@@ -151,7 +151,7 @@ async def login():
     refresh_token_expires = utc_now() + timedelta(days=30)  ## One Month
 
     payload = {
-        "key": secrets.token_urlsafe(32),
+        "sub": secrets.token_urlsafe(32),
         "token_type": "refresh",
         "exp": refresh_token_expires,
         "iat": utc_now(),
@@ -167,12 +167,12 @@ async def login():
     }
 
     # Finding Token in Database
-    uq = await AuthToken.filter(id=user.id).update(
-        token=token, refresh_token=refresh_token
+    await AuthToken.create(
+        user_id=user.id,
+        token=token,
+        refresh_token=refresh_token,
+        expires=refresh_token_expires,
     )
-
-    if not uq:
-        await AuthToken.create(id=user.id, token=token, refresh_token=refresh_token)
 
     res = get_response()
     _set_cookie(res, "token", token, timedelta(minutes=30))
@@ -210,27 +210,43 @@ async def protected():
 
         # Generate new token
         expires = utc_now() + timedelta(minutes=30)
-
         payload = {
             "token_type": "access",
-            "sub": atk.id,
+            "sub": atk.user_id,
             "exp": expires,
             "iat": utc_now(),
         }
-
         newtoken = jwt.encode(payload, JWT_ACCESS_SECRET, JWT_ALGORITHIM)
         atk.token = newtoken
         await atk.save()
         _set_cookie(res, "token", newtoken, timedelta(minutes=30))
         return res
-
     else:
         return get_response()
 
 
-@bp.route("/logout")
+@bp.get("/logout")
 async def logout():
-    response = get_response()
+    refresh_token = request.cookies["refresh_token"]
+    count = await AuthToken.filter(refresh_token=refresh_token).delete()
+    print(count)
+    response = get_response(203)
     _set_cookie(response, "token", "", timedelta())
     _set_cookie(response, "refresh_token", "", timedelta())
     return response
+
+
+@bp.delete("/logout/all")
+async def logout_all():
+    refresh_token = request.cookies["refresh_token"]
+
+    authtoken = await AuthToken.get_or_none(refresh_token=refresh_token)
+
+    if not authtoken:
+        return UnAuthorized
+
+    payload = jwt.decode(refresh_token, JWT_REFRESH_SECRET, [JWT_ALGORITHIM])
+
+    await AuthToken.filter(user_id=authtoken.user_id).delete()
+
+    return get_response(203)

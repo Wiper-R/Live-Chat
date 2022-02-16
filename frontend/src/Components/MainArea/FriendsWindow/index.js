@@ -22,7 +22,7 @@ const FriendWindowWrapper = ({ className }) => {
     }
   };
   return (
-    <div className={`container-fluid ${className}`}>
+    <div className={`container-fluid d-flex flex-column ${className}`}>
       <Header />
       {renderElement()}
     </div>

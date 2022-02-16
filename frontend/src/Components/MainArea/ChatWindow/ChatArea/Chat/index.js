@@ -16,24 +16,23 @@ const Chat = styled(ChatWrapper)`
   width: fit-content;
   max-width: 400px;
   border-radius: 0.25em;
-  padding: 4px 6px;
-  padding-bottom: 0px;
+  padding: 10px;
   background-color: var(--bg-color-not-sender);
   color: black;
   margin-bottom: 0.25em;
 
   // new
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 
   .message {
+    margin-right: 25px;
     font-size: 1em;
   }
 
   .time {
     align-self: flex-end;
-    margin-left: 100px;
-    margin-top: -12px;
+    margin-right: -5px;
     font-size: 0.8rem;
   }
 `;

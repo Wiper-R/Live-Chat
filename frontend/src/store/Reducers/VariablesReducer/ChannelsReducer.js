@@ -41,26 +41,13 @@ const ChannelLoadingFailed = () => {
 };
 
 const LoadChannels = () => (dispatch, _) => {
-  // dispatch(ChannelLoading());
-  // try{
-  //     fetch("http://127.0.0.1:5000/api/friends", { credentials: "include" }).then(
-  //       (res) => {
-  //         if (res.ok) {
-  //           res.json().then((data) => {
-  //             dispatch(ChannelLoaded(data));
-  //           });
-  //         }
-  //         else{
-  //             dispatch(ChannelLoadingFailed());
-  //         }
-  //       }
-  //     );
-  // }
-  // catch {
-  //     dispatch(ChannelLoadingFailed());
-  // }
-  // new Http("friends/", "GET").then()
-  dispatch(ChannelLoaded([]));
+  dispatch(ChannelLoading());
+  new Http("channels/@me", "GET").request().then(({ data, error }) => {
+    if (error) {
+      return dispatch(ChannelLoadingFailed());
+    }
+    dispatch(ChannelLoaded(data));
+  });
 };
 
 // Reducer Itself
@@ -92,7 +79,7 @@ const ChannelReducers = (state = State, action) => {
       };
 
     case CHANNEL_CREATED:
-      if (state.data.filter((e) => e.id === action.payload.id).length > 0){
+      if (state.data.filter((e) => e.id === action.payload.id).length > 0) {
         return state;
       }
       return {

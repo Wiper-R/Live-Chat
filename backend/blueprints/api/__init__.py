@@ -1,14 +1,17 @@
 from datetime import timedelta
 from quart import Blueprint, current_app, jsonify, request
 import jwt
+import tortoise
 from config import JWT_ACCESS_SECRET
 from constants import JWT_ALGORITHIM
-from utils.helpers import UnAuthorized, get_response, utc_now, _set_cookie
-from models.api import Channel, RelationShip, RelationshipType, User
+from utils.helpers import UnAuthorized, dt_to_str, get_response, utc_now, _set_cookie
+from models.api import Channel, Message, RelationShip, RelationshipType, User
 from models.auth import AuthToken
 from quart import g
 from tortoise.queryset import Q
-from tortoise.functions import Count
+from ..websocket import send_ws_message
+from .serializers import message_serializer
+from tortoise.exceptions import DoesNotExist
 
 
 def logged_in(func):
@@ -45,6 +48,7 @@ def safe_user(user):
         if field == "id":
             data[field] = str(data[field])
 
+    data["avatar"] = f"http://127.0.0.1:5000/static/profiles/{user.id}.png"
     return data
 
 
@@ -96,7 +100,7 @@ async def add_token_to_headers():
 
         payload = {
             "token_type": "access",
-            "sub": atk.id,
+            "sub": atk.user_id,
             "exp": expires,
             "iat": utc_now(),
         }
@@ -195,7 +199,7 @@ async def create_channel():
     channel = None
 
     if count >= 1:
-        channel = await Channel.get(id=row[0]['channel_id'])
+        channel = await Channel.get(id=row[0]["channel_id"])
         await channel.fetch_related("recipients")
 
     if not channel:
@@ -204,7 +208,67 @@ async def create_channel():
         channel = await Channel.create()
         await channel.recipients.add(current_user, other_user)
 
-    return jsonify({
-        'id': str(channel.id),
-        'recipients': [safe_user(user) for user in channel.recipients]
-    })
+    return jsonify(
+        {
+            "id": str(channel.id),
+            "recipients": [safe_user(user) for user in channel.recipients],
+        }
+    )
+
+
+@bp.get("/channels/@me")
+async def get_channels():
+    recipient = await User.get(pk=g.sub)
+    channels = await Channel.filter(recipients=recipient)
+    data = []
+    for channel in channels:
+        await channel.fetch_related("recipients")
+        data.append(
+            {
+                "id": str(channel.id),
+                "recipients": [safe_user(user) for user in channel.recipients],
+            }
+        )
+
+    return jsonify(data)
+
+
+@bp.get("/channels/<int:channel>/messages")
+async def fetch_messages(channel):
+    messages = await Message.filter(channel__id=channel)
+    data = []
+    for message in messages:
+        data.append(
+            {
+                "id": str(message.id),
+                "content": message.content,
+                "created_at": dt_to_str(message.created_at),
+                "author_id": str(message.author_id),
+                "channel_id": str(message.channel_id),
+            }
+        )
+    return jsonify(data)
+
+
+@bp.post("/channels/<int:channel_id>/messages")
+async def post_message(channel_id: int):
+    data = await request.get_json()
+
+    content = data["content"]
+    try:
+        channel = await Channel.get(id=channel_id)
+    except DoesNotExist:
+        return get_response(404, message="This channel doesn't exists.")
+
+    other_recipient = await channel.recipients.filter(~Q(id=g.sub)).first()
+
+    message = await Message.create(
+        content=content,
+        author_id=g.sub,
+        channel_id=channel_id,
+    )
+
+    serialized_msg = await message_serializer(message)
+    await send_ws_message(g.sub, "MESSAGE_CREATED", serialized_msg)
+    await send_ws_message(other_recipient.id, "MESSAGE_CREATED", serialized_msg)
+    return jsonify(serialized_msg)

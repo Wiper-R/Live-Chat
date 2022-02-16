@@ -2,9 +2,15 @@ import styled from "styled-components";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import { useState } from "react";
+import { BsEmojiSmileFill } from "react-icons/bs";
 import { useEffect } from "react";
+import Http from "../../../../http";
+import { useSelector } from "react-redux";
 
 const ChatOutWrapper = ({ className }) => {
+  const selectedChannelId = useSelector(
+    (state) => state.variables.selectedChannel.id
+  );
   const [emojiPickerState, setemojiPickerState] = useState(false);
   const onEmojiClick = (emoji, _) => {
     const textarea = document.querySelector("#chat__content");
@@ -40,6 +46,23 @@ const ChatOutWrapper = ({ className }) => {
   const handleTextAreaKeydown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      const textarea = document.querySelector("#chat__content");
+      const content = textarea.value;
+      if (!content) {
+        return;
+      }
+      new Http(`channels/${selectedChannelId}/messages`, "POST", null, {
+        content,
+      })
+        .request()
+        .then(({ data, error }) => {
+          if (error) {
+            console.log(error);
+            return;
+          }
+          console.log(data);
+          textarea.value = "";
+        });
     }
   };
 
@@ -64,7 +87,7 @@ const ChatOutWrapper = ({ className }) => {
         }}
       />
       <button id="emoji__trigger" onClick={triggerEmojiPicker}>
-        <i className="fas fa-smile-wink"></i>
+        <BsEmojiSmileFill />
       </button>
     </div>
   );
@@ -72,6 +95,7 @@ const ChatOutWrapper = ({ className }) => {
 
 const ChatOut = styled(ChatOutWrapper)`
   width: 100%;
+  position: relative;
   height: var(--chat-out-height);
   background-color: #292b2f;
   textarea {
@@ -112,6 +136,7 @@ const ChatOut = styled(ChatOutWrapper)`
     background-color: transparent;
     color: black;
     position: absolute;
+    bottom: 25px;
     right: 40px;
     font-size: 24px;
     outline: none;

@@ -20,7 +20,7 @@ const HeaderWrapper = ({ className }) => {
         ])
       );
     }
-  }, [activePage])
+  }, [activePage]);
 
   const ChangeFilter = (filter) => () => {
     if (activePage[1] !== filter) {

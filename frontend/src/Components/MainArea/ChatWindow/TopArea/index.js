@@ -31,8 +31,11 @@ const TopAreaWrapper = ({ className }) => {
     (state) => state.variables.selectedChannel.id
   );
   const user = useSelector((state) => state.auth.user);
-  const channel = useSelector((state) =>
-    state.variables.channels.data.filter((ch) => ch.id === selectedChannelId)[0]
+  const channel = useSelector(
+    (state) =>
+      state.variables.channels.data.filter(
+        (ch) => ch.id === selectedChannelId
+      )[0]
   );
   const otherUser = channel.recipients.filter((o) => o.id !== user.id)[0];
   return (

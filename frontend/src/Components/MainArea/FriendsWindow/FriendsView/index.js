@@ -7,6 +7,7 @@ import Http from "../../../../http";
 import { useDispatch } from "react-redux";
 import { ChannelCreated } from "../../../../store/Reducers/VariablesReducer/ChannelsReducer";
 import { ChangeActivePage } from "../../../../store/Reducers/VariablesReducer/ActivePageReducer";
+import { SelectChannel } from "../../../../store/Reducers/VariablesReducer/SelectedChannelReducer";
 
 const EntryWrapper = ({ className, isPending = false, to }) => {
   const optionsRef = useRef();
@@ -21,16 +22,17 @@ const EntryWrapper = ({ className, isPending = false, to }) => {
           })
             .request()
             .then(({ data, error }) => {
-              if (!error){
+              if (!error) {
                 dispatch(ChannelCreated(data));
-                dispatch(ChangeActivePage([]))
+                dispatch(ChangeActivePage([]));
+                dispatch(SelectChannel(data.id));
               }
             });
         }
       }}
     >
       <div className="left">
-        <img src="http://127.0.0.1:5000/static/profiles/default.png" alt="" />
+        <img src={to.avatar} alt="" />
         <span>{`${to.firstname} ${to.lastname}`}</span>
       </div>
       <div className="right">
@@ -112,7 +114,7 @@ const Entry = styled(EntryWrapper)`
 const FreindsViewWrapper = ({ className }) => {
   const relationships = useSelector((state) => state.variables.relationships);
   return (
-    <div className={`container-fluid ${className}`}>
+    <div className={`container-fluid flex-grow-1 ${className}`}>
       {relationships.data.map((e) => (
         <Entry to={e.to} key={e.id} />
       ))}
@@ -122,6 +124,27 @@ const FreindsViewWrapper = ({ className }) => {
 
 const FriendsView = styled(FreindsViewWrapper)`
   padding: 20px;
+
+  height: 0;
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  :hover::-webkit-scrollbar-thumb {
+    background: #737874;
+  }
+
+  overflow-y: scroll;
+  overflow-x: hidden;
 `;
 
 export default FriendsView;

@@ -15,7 +15,7 @@ class Message(models.Model):
     id = SnowflakeField(pk=True)
     content = fields.TextField()
     author = fields.ForeignKeyField("api.User", related_name="author")
-    recipient = fields.ForeignKeyField("api.User", related_name="recipient")
+    channel = fields.ForeignKeyField("api.Channel", related_name="channel")
     created_at = fields.DatetimeField(auto_now=True)
 
 

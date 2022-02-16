@@ -13,8 +13,8 @@ register_blueprints(app)
 async def _do_startup_tasks():
     # Initiating tortoise
     await Tortoise.init(TORTOISE)
-    app.con = Tortoise.get_connection('default')
-    # await Tortoise.generate_schemas()
+    app.con = Tortoise.get_connection("default")
+    await Tortoise.generate_schemas()
 
 
 @app.route("/")

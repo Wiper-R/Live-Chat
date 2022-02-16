@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { ChangeActivePage } from "../../../../store/Reducers/VariablesReducer/ActivePageReducer";
 import { SelectChannel } from "../../../../store/Reducers/VariablesReducer/SelectedChannelReducer";
 
 const ChannelWrapper = ({ className, id, user }) => {
@@ -7,15 +8,16 @@ const ChannelWrapper = ({ className, id, user }) => {
   return (
     <div
       className={`d-flex flex-row recent-chat align-items-center ${className}`}
-      onClick={() => dispatch(SelectChannel(id))}
+      onClick={() => {
+        dispatch(ChangeActivePage([]));
+        dispatch(SelectChannel(id));
+      }}
     >
-      <img
-        src={`http://127.0.0.1:5000/static/profiles/${user.id}.png`}
-        alt=""
-        className={`rounded-circle`}
-      />
+      <img src={user.avatar} className={`rounded-circle`} />
       <div className="d-flex container-fluid ps-2 flex-column justify-content-center description">
-        <span className="fs-6 fw text fullname">{user.firstname} {user.lastname}</span>
+        <span className="fs-6 fw text fullname">
+          {user.firstname} {user.lastname}
+        </span>
         <span className="fs-8 fw-light username">@{user.username}</span>
       </div>
     </div>

@@ -112,10 +112,7 @@ const MenuWrapper = ({ className }) => {
     >
       {user ? (
         <>
-          <img
-            src={`http://127.0.0.1:5000/static/profiles/${user.id}.png`}
-            className="rounded-circle"
-          />
+          <img src={user.avatar} className="rounded-circle" />
           <OverlayTrigger
             placement="top"
             overlay={tooltip}

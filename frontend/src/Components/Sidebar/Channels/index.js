@@ -22,11 +22,7 @@ const RecentsChatWrapper = ({ className }) => {
       {!Channels.isFetching ? (
         channels.data.map((e) => {
           const other = e.recipients.filter((o) => o.id !== user.id)[0];
-          return <Channel
-            key={e.id}
-            id={e.id}
-            user={other}
-          />
+          return <Channel key={e.id} id={e.id} user={other} />;
         })
       ) : (
         <></>
