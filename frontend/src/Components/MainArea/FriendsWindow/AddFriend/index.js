@@ -87,22 +87,23 @@ const AddFriend = styled(AddFriendWrapper)`
   .send-friend-request {
     display: flex;
     align-items: center;
-    position: relative;
     flex-shrink: 0;
     overflow: hidden;
+    width: 900px;
+    position: relative;
 
     button {
       white-space: pre;
-      overflow: hidden;
-      position: relative;
-      left: -160px;
       outline: none;
       background-color: #5865f2;
       color: white;
       border: none;
       padding: 6px 10px;
       border-radius: 5px;
+      position: absolute;
       font-size: 14px;
+      right: 0px;
+      margin-right: 10px;
 
       &.disabled {
         opacity: 0.5;
@@ -112,7 +113,7 @@ const AddFriend = styled(AddFriendWrapper)`
   }
 
   input {
-    width: 90%;
+    width: 100%;
     padding: 14px;
     border-radius: 5px;
     outline: none;
