@@ -5,7 +5,7 @@ from config import TORTOISE
 from blueprints import register_blueprints
 
 
-app = Quart(__name__, static_folder="./static/")
+app = Quart(__name__, static_folder="./static")
 register_blueprints(app)
 
 
@@ -19,7 +19,7 @@ async def _do_startup_tasks():
 
 @app.route("/")
 async def home():
-    return "Hello"
+    return await app.send_static_file("index.html")
 
 
 @app.after_serving

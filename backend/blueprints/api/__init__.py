@@ -39,6 +39,7 @@ def safe_user(user):
         "firstname",
         "lastname",
         "id",
+        "email",
     )
     data = {}
 
@@ -52,7 +53,7 @@ def safe_user(user):
     return data
 
 
-@bp.route("/user/<int:user>", methods=("GET",))
+@bp.route("/users/<int:user>", methods=("GET",))
 @logged_in
 async def fetch_user(user: int):
     token = g.access_token
@@ -61,10 +62,10 @@ async def fetch_user(user: int):
     if user:
         return safe_user(user)
     else:
-        return {}
+        return get_response(status=404, message="User not found.")
 
 
-@bp.route("/user/@me", methods=("GET",))
+@bp.route("/users/@me", methods=("GET",))
 @logged_in
 async def get_current_user():
     user = await User.get(id=g.sub)
@@ -248,6 +249,28 @@ async def fetch_messages(channel):
             }
         )
     return jsonify(data)
+
+
+@bp.put("/users/@me")
+@logged_in
+async def modify_user():
+    data = await request.get_json()
+    user = await User.get(id=g.sub)
+    username = data.get("username", user.username)
+    email = data.get("email", user.email)
+    firstname = data.get("firstname", user.firstname)
+    lastname = data.get("lastname", user.lastname)
+
+    await User.filter(id=g.sub).update(
+        username=username,
+        email=email,
+        firstname=firstname,
+        lastname=lastname,
+    )
+
+    await user.refresh_from_db()
+
+    return jsonify(safe_user(user))
 
 
 @bp.post("/channels/<int:channel_id>/messages")

@@ -77,6 +77,7 @@ async def ws():
     while True:
         try:
             data = await websocket.receive_json()
+            print(data)
         except asyncio.CancelledError:
             clients.remove(client)
             raise

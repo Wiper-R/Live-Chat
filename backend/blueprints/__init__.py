@@ -3,7 +3,7 @@ from quart_cors import cors
 
 
 def _cors(bp):
-    return cors(bp, allow_origin="http://localhost:3000", allow_credentials=True)
+    return cors(bp, allow_origin=["http://localhost:3000", "http://localhost:3005"], allow_credentials=True)
 
 
 def register_blueprints(app: Quart):
