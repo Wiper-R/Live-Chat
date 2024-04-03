@@ -21,7 +21,7 @@ My aim was to build a IMS like whatsapp, messenger etc.
 I learnt how websockets and ISM work? Biggest challenge I faced was authorization in websockets, I had to read many articles to implement a secure authorization.
 
 
-**Side Note:** This project was built 4 years ago. I was in the learning phase back then, some features might not work as expected, feel free to fix them :)
+**Side Note:** This project was built 2 years ago. And this readme was added later, some features might not work as expected, feel free to fix them :)
 
 
 ## Screenshots
