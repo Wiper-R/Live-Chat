@@ -16,6 +16,14 @@ My aim was to build a IMS like whatsapp, messenger etc.
 
 
 
+## Lessons Learned
+
+I learnt how websockets and ISM work? Biggest challenge I faced was authorization in websockets, I had to read many articles to implement a secure authorization.
+
+
+**Side Note:** This project was built 4 years ago. I was in the learning phase back then, some features might not work as expected, feel free to fix them :)
+
+
 ## Screenshots
 
 Signup Page (I know it's not pretty, lol)
@@ -65,10 +73,18 @@ Start the server
 
 
 **Frontend**
+
+Change directory
+```bash
+  cd Frontend
+```
+
+Install dependencies
 ```bash
   npm install
 ```
 
+Start the server
 ```bash
   npm start
 ```
@@ -76,10 +92,7 @@ Start the server
 
 
 
-## Lessons Learned
+## License
 
-I learnt how websockets and ISM work? Biggest challenge I faced was authorization in websockets, I had to read many articles to implement a secure authorization.
-
-
-**Side Note:** This project was built 4 years ago. I was in the learning phase back then, some features might not work as expected, feel free to fix them :)
+[MIT](https://choosealicense.com/licenses/mit/)
 
